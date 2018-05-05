@@ -38,7 +38,7 @@ class Model:
         self.t_dist = tf.placeholder(tf.float32, [None, cluster], name='kld_label')
         self.bs = tf.shape(self.data)
         self.step = tf.Variable(0, trainable=False)
-        self.learning_rate = tf.train.exponential_decay(init_lr, self.step, 250, 0.75)
+        self.learning_rate = tf.train.exponential_decay(init_lr, self.step, 500, 0.8)
         self.code = None
         self.cae
 
@@ -130,7 +130,7 @@ def main(_):
     print("Using params:", FLAGS.__flags)
 
     # load dataset
-    x, y = load_mnist()
+    x, y = load_mnist() # You have to implement your own data feed function
     n_train = x.shape[0]
 
     # initialize model
