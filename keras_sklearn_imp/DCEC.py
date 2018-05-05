@@ -94,7 +94,7 @@ class DCEC(object):
         self.model = Model(inputs=self.cae.input,
                            outputs=[clustering_layer, self.cae.output])
 
-    def pretrain(self, x, batch_size=256, epochs=200, optimizer='adam', save_dir='results/temp'):
+    def pretrain(self, x, batch_size=256, epochs=1, optimizer='adam', save_dir='results/temp'):
         print('...Pretraining...')
         self.cae.compile(optimizer=optimizer, loss='mse')
         from keras.callbacks import CSVLogger
@@ -240,11 +240,9 @@ if __name__ == "__main__":
         os.makedirs(args.save_dir)
 
     # load dataset
-    from datasets import load_mnist, load_usps
+    from datasets import load_mnist
     if args.dataset == 'mnist':
         x, y = load_mnist()
-    elif args.dataset == 'usps':
-        x, y = load_usps('data/usps')
     elif args.dataset == 'mnist-test':
         x, y = load_mnist()
         x, y = x[60000:], y[60000:]

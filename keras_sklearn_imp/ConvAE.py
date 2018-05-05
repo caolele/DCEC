@@ -29,6 +29,7 @@ def CAE(input_shape=(28, 28, 1), filters=[32, 64, 128, 10]):
     model.summary()
     return model
 
+
 if __name__ == "__main__":
     from time import time
 
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', default='usps', choices=['mnist', 'usps'])
     parser.add_argument('--n_clusters', default=10, type=int)
     parser.add_argument('--batch_size', default=256, type=int)
-    parser.add_argument('--epochs', default=200, type=int)
+    parser.add_argument('--epochs', default=2, type=int)
     parser.add_argument('--save_dir', default='results/temp', type=str)
     args = parser.parse_args()
     print(args)

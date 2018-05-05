@@ -1,29 +1,34 @@
-# Deep Clustering with Convolutional Autoencoders (DCEC)
+# Tensorflow Implemantation of CAE and DCEC
 
-Keras implementation for ICONIP-2017 paper:
+Abbreviations:
 
-* Xifeng Guo, Xinwang Liu, En Zhu, Jianping Yin. 
-Deep Clustering with Convolutional Autoencoders. ICONIP 2017.
+- DCEC: Deep Clustering with Convolutional Autoencoders (Xifeng Guo, Xinwang Liu, En Zhu, Jianping Yin. 
+Deep Clustering with Convolutional Autoencoders. ICONIP 2017.)
 
-## Usage
-1. Install [Keras >=v2.0](https://github.com/fchollet/keras), scikit-learn and git   
-`sudo pip install keras scikit-learn`   
-`sudo apt-get install git`
-2. Clone the code to local.   
-`git clone https://github.com/XifengGuo/DCEC.git DCEC`
-3. Prepare datasets.    
+- CAE: Convolutional Autoencoder (initially evaluated in [this paper](https://arxiv.org/abs/1703.07980))
 
-        cd DCEC/data/usps   
-        bash ./download_usps.sh   
-        cd ../..
+This repo is forked from [here](https://github.com/XifengGuo/DCEC), yet this implementation get rid of the dependency of Keras and scikit-learn.
 
-4. Run experiment on MNIST.   
-`python DCEC.py mnist`     
-The DCEC model will be saved to "results/temp/dcec_model_final.h5".
+## To Run Mnist Examples
+Pre-request: Install Tensorflow 1.4.1
+`pip install tensorflow==1.4.1`
 
-5. Run experiment on USPS.   
-`python DCEC.py usps`   
+### Train CAE
+Run:   
+`python CAE_TF.py --epoch=2 --ver=1 --bs=256 --lr=0.005 --dir=./dump`
 
-6. Run experiment on MNIST-TEST.   
-`python DCEC.py mnist-test`   
+### Train DCEC
+Run: `python TF_DCEC.py` with default parameters:  
+>'iterCAE':210000,  
+>'iterDCEC':700000,  
+>'updateIntervalDCEC':140,  
+>'kmeansTrainSteps':1000,  
+>'cluster':10,  
+>'ver':1,  
+>'bs':256,  
+>'lr':0.001,  
+>'dir':'./dump'  
+
+Change the parameters by `python TF_DCEC.py --iterCAE=10000 --cluster=16` and so on ...
+
 
