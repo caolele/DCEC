@@ -13,7 +13,7 @@ from tensorflow.python.saved_model import tag_constants
 tf.app.flags.DEFINE_integer('iterCAE', 210000, 'number of iterations to pretrain CAE mse loss')
 tf.app.flags.DEFINE_integer('iterDCEC', 700000, 'number of iterations to jointly fine-tune DCEC loss')
 tf.app.flags.DEFINE_integer('updateIntervalDCEC', 140, 'the update interval of training DCEC')
-tf.app.flags.DEFINE_integer('kmeansTrainSteps', 1000, 'the number of steps to train Kmeans')
+tf.app.flags.DEFINE_integer('kmeansTrainSteps', 10000, 'the number of steps to train Kmeans')
 tf.app.flags.DEFINE_integer('cluster', 10, 'number of clusters')
 tf.app.flags.DEFINE_integer('ver', 1, 'version number of the model.')
 tf.app.flags.DEFINE_integer('bs', 256, 'batch size of training.')
@@ -38,7 +38,8 @@ class Model:
         self.t_dist = tf.placeholder(tf.float32, [None, cluster], name='kld_label')
         self.bs = tf.shape(self.data)
         self.step = tf.Variable(0, trainable=False)
-        self.learning_rate = tf.train.exponential_decay(init_lr, self.step, 500, 0.8)
+        self.init_lr = init_lr
+        self.learning_rate = tf.train.exponential_decay(self.init_lr, self.step, 1000, 0.9)
         self.code = None
         self.cae
 
@@ -60,6 +61,7 @@ class Model:
         self.loss_kld
         self.optimize_cae
         self.optimize
+        self.optimize_kmeans
 
     def increment_cur_iter(self):
         self.cur_iter += 1
@@ -125,6 +127,11 @@ class Model:
     def optimize(self):
         return self.optimizer.minimize(self.loss_cae + 0.1 * self.loss_kld, global_step=self.step)
 
+    @define_scope
+    def optimize_kmeans(self):
+        optimizer = tf.train.GradientDescentOptimizer(self.init_lr)
+        return optimizer.minimize(self.avg_distance, global_step=self.step)
+
 
 def main(_):
     print("Using params:", FLAGS.__flags)
@@ -162,7 +169,7 @@ def main(_):
         if isInit:
             break
     for i in range(0, FLAGS.kmeansTrainSteps):
-        _, d = sess.run([model.training_op, model.avg_distance], feed_dict={model.kmeans_input: init_codes})
+        _, d = sess.run([model.optimize_kmeans, model.avg_distance], feed_dict={model.kmeans_input: init_codes})
         progress(i+1, FLAGS.kmeansTrainSteps, status=' Avg.Distance=%f, Step=%d' % (d, i+1))
     cidx, = sess.run([model.cluster_idx], feed_dict={model.kmeans_input: init_codes})[0]
     last_cidx = np.copy(cidx)

@@ -22,8 +22,9 @@ all_scores, cluster_idx, scores, cluster_centers_initialized, \
 cluster_index = cluster_idx[0]  # unwrap
 
 
-avg_distance = tf.reduce_mean(all_scores)
+avg_distance = tf.reduce_mean(all_scores)  # This is the minimization target
 init_param = tf.global_variables_initializer()
+
 with tf.Session() as sess:
     sess.run(init_param)
     sess.run(init_op, feed_dict={X: mnist.train.images})
